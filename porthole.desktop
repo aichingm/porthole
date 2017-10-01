@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Porthole
+Comment=A minimalistic frameless text-driven window to the world 🌍 wide web!
+TryExec=porthole
+Exec=porthole
+Icon=porthole
