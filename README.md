@@ -68,9 +68,53 @@ To interact with porthole hit `ctrl` + `shift` + `enter` which opens a menu in f
 
   **pos(0, 0)** pos(left, top)
 
-* border adds or removes the border around the window
+* border() toggles the window border
 
-  **border(True)** , **border(False)**
+  **border()**
+
+  * border(True) adds the window border
+
+    **border(True)**
+
+  * border(False) removes the window border
+
+    **border(False)**
+
+* ontop() toggles the ontopness of the window
+
+  **ontop()**
+
+  * ontop(True) puts the window on top of all other windows
+
+    **ontop(True)**
+
+  * ontop(False) sets the ontopness of the window bask to normal
+
+    **ontop(False)**
+
+* taskbar() toggles the taskbar indecatior
+
+  **taskbar()**
+
+  * taskbar(True) adds a taskbar indecator for the window
+
+    **taskbar(True)**
+
+  * taskbar(False) removes the taskbar indecator for the window
+
+    **taskbar(False)**
+
+* fs() toggles the fullscreen mode of the window
+
+  **fs()**
+
+  * fs(True) shows the window in fullscreen mode
+
+    **fs(True)**
+
+  * fs(False) shows the window in normal mode
+
+    **fs(False)**
 
 * exit quits porthole :skull:
 
@@ -114,7 +158,7 @@ nop() and print("fuck this I'm out") or sys.exit()
 
 ## Adding Custom Methods
 
-Copy the file https://raw.githubusercontent.com/aichingm/porthole/master/Porthole/res/phuserproxy.pyphuserproxy.py to ~/.phuserproxy.py which should look something like this:
+Copy the file https://raw.githubusercontent.com/aichingm/porthole/master/Porthole/res/phuserproxy.py to ~/.phuserproxy.py which should look something like this:
 
 ```python
 from PortholeProxy import PortholeInstance

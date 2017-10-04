@@ -59,10 +59,40 @@ class PortholeProxy():
         result = subprocess.run(['wall', str(text)], stdin=subprocess.DEVNULL,stdout=subprocess.PIPE)
         return self
         
-    def border(self, border):
-        if border:
-            self._porthole.setWindowFlags(QtCore.Qt.WindowTitleHint)
+    def border(self, border=None):
+        if border == None:
+             border = self._porthole.hasBorder()
+        if not border:
+            self._porthole.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         else:
-            self._porthole.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        self._porthole.show()
+            self._porthole.removeWindowFlag(QtCore.Qt.FramelessWindowHint)
+        return self
+
+    def ontop(self, ontop=None):
+        if ontop == None:
+            ontop = not self._porthole.isOnTop()
+        if ontop:
+            self._porthole.setWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+        else:
+            self._porthole.removeWindowFlag(QtCore.Qt.WindowStaysOnTopHint)
+        return self
+
+    def taskbar(self, taskbar=None):
+        if taskbar == None:
+            taskbar = self._porthole.isTaskbar()
+        if not taskbar:
+            self._porthole.setWindowFlag(QtCore.Qt.Tool)
+        else:
+            self._porthole.removeWindowFlag(QtCore.Qt.Tool)
+        return self
+    
+    def fs(self, fullscreen=None):
+        if fullscreen == None:
+            fullscreen = not self._porthole.isFullScreen()
+        
+        print(fullscreen)
+        if not fullscreen:
+            self._porthole.showNormal()
+        else:
+            self._porthole.showFullScreen()
         return self

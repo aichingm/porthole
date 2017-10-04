@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWebEngine, QtWebEngineWidgets, QtWebEngineCor
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
 #keyboard listener imports
 from pynput import keyboard
@@ -31,11 +32,18 @@ class Porthole(QMainWindow):
     
     def __init__(self, app):
         super().__init__()
-        self._code = ""
+        self._setupVars(app)
         self._setupWin()
         self._setup()
         self._setupWebEngineVewiew();
         self.show();
+
+
+    def _setupVars(self, app):
+        self._code = ""
+        self.isFs = False
+        #                          remove the frame         put it over all other windows   remove it from the taskbar
+        self.windowFlags = (QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.Tool)
         self._app = app
         self.proxy = PortholeProxy(self)
         
@@ -46,8 +54,8 @@ class Porthole(QMainWindow):
         self.setWindowTitle('Porthole')
         scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'res/icon.png'))
-        self.setWindowFlags(QtCore.Qt.Widget | QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint)
-        #self.setParent(0); #Create TopLevel-Widget
+        # QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.Tool
+        self.setWindowFlags(self.windowFlags)
         self.setAttribute(QtCore.Qt.WA_NoSystemBackground, True)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
         self.resize(440, 240)
@@ -85,7 +93,37 @@ class Porthole(QMainWindow):
         
     def exit(self):
         self._app.quit()
+
+    def removeWindowFlag(self, flag):
+        self.windowFlags = self.windowFlags & ~flag
+        self.setWindowFlags(self.windowFlags)
+        self.show()
     
+    def setWindowFlag(self, flag):
+        self.windowFlags = self.windowFlags | flag
+        self.setWindowFlags(self.windowFlags)
+        self.show()
+        
+    def hasBorder(self):
+        return (self.windowFlags & QtCore.Qt.FramelessWindowHint) == QtCore.Qt.FramelessWindowHint
+    
+    def isOnTop(self):
+        return (self.windowFlags & QtCore.Qt.WindowStaysOnTopHint) == QtCore.Qt.WindowStaysOnTopHint
+    
+    def isTaskbar(self):
+        return (self.windowFlags & QtCore.Qt.Tool) == QtCore.Qt.Tool
+    
+    def isFullScreen(self):
+        return self.isFs
+
+    def showFullScreen(self):
+        self.isFs = True
+        return super().showFullScreen()
+    
+    def showNormal(self):
+        self.isFs = False
+        return super().showNormal()
+
     def _handle_fullscreenRequst(self, request):
         request.accept()
         
@@ -148,5 +186,4 @@ if __name__ == "__main__":
         spec.loader.exec_module(proxyModule)
     if args.init:
         PortholeInstance.instance.setCode(args.init)
-        PortholeInstance.instance._code_signal.emit()
     sys.exit(app.exec_())
