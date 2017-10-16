@@ -1,6 +1,7 @@
 # QT imports
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QShortcut
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWebEngineWidgets import QWebEngineSettings
@@ -21,7 +22,7 @@ import importlib.util
 # porthole imports
 from PortholeProxy import PortholeProxy, PortholeInstance
 from Views import WebEngineView
-from Listeners import KbdListenerThread, StdinListenerThread
+from Listeners import StdinListenerThread
 
 
 class Porthole(QMainWindow):
@@ -55,6 +56,9 @@ class Porthole(QMainWindow):
         self.setAttribute(QtCore.Qt.WA_NoSystemBackground, True)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
         self.resize(440, 240)
+
+        self.shortcut = QShortcut(QtGui.QKeySequence("Ctrl+Shift+Return"), self)
+        self.shortcut.activated.connect(self.on_seq_down)
 
     def _setup_web_engine_view(self):
         self.web_engine_view = WebEngineView()
@@ -134,6 +138,11 @@ class Porthole(QMainWindow):
     def find_listener(self, type):
         return next(l for l in self._listeners if isinstance(l, type))
 
+    def on_seq_down(self):
+        result = subprocess.run(['dmenu', '-p', "::"], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE)
+        if result.returncode == 0:
+            self.set_code(result.stdout.decode("utf-8").strip())
+
 
 def test_for_dmenu():
     result = subprocess.run(['which', 'dmenu'], stdout=subprocess.PIPE)
@@ -160,10 +169,6 @@ if __name__ == "__main__":
     PortholeInstance.set_instance(Porthole(app))
 
     listeners = []
-    if test_for_dmenu():
-        kbdListener = KbdListenerThread(PortholeInstance.instance)
-        _thread.start_new_thread(kbdListener.run, ())
-        listeners.append(kbdListener)
 
     stdinListener = StdinListenerThread(PortholeInstance.instance)
     _thread.start_new_thread(stdinListener.run, ())

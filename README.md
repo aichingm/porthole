@@ -92,15 +92,15 @@ To interact with porthole hit `ctrl` + `shift` + `enter` which opens a menu in f
 
     **ontop(False)**
 
-* taskbar() toggles the taskbar indecatior
+* taskbar() toggles the taskbar indicator
 
   **taskbar()**
 
-  * taskbar(True) adds a taskbar indecator for the window
+  * taskbar(True) adds a taskbar indicator for the window
 
     **taskbar(True)**
 
-  * taskbar(False) removes the taskbar indecator for the window
+  * taskbar(False) removes the taskbar indicator for the window
 
     **taskbar(False)**
 
