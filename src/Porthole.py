@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWebEngineWidgets import QWebEngineSettings
-# keyboard listener imports
-from pynput import keyboard
 # system and os imports
 import sys
 import os
@@ -23,6 +21,7 @@ import importlib.util
 # porthole imports
 from PortholeProxy import PortholeProxy, PortholeInstance
 from Views import WebEngineView
+from Listeners import KbdListenerThread, StdinListenerThread
 
 
 class Porthole(QMainWindow):
@@ -129,42 +128,11 @@ class Porthole(QMainWindow):
     def closeEvent(self, event):
         QtCore.QCoreApplication.instance().quit()
 
+    def set_listeners(self, listeners):
+        self._listeners = listeners
 
-class KbdListenerThread():
-    def __init__(self, porthole):
-        self._porthole = porthole
-        self._keyCombination = {keyboard.Key.shift, keyboard.Key.ctrl, keyboard.Key.enter}
-        self._current = set()
-
-    def run(self):
-        with keyboard.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
-            listener.join()
-
-    def on_press(self, key):
-        if key in self._keyCombination:
-            self._current.add(key)
-            if all(k in self._current for k in
-                   self._keyCombination) and self._porthole.web_engine_view.isActiveWindow():
-                result = subprocess.run(['dmenu', '-p', "::"], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE)
-                print(result)
-                if result.returncode == 0:
-                    self._porthole.set_code(result.stdout.decode("utf-8").strip())
-
-    def on_release(self, key):
-        try:
-            self._current.remove(key)
-        except KeyError:
-            pass
-
-
-class StdinListenerThread():
-    def __init__(self, porthole):
-        self._porthole = porthole
-
-    def run(self):
-        while True:
-            line = input()
-            self._porthole.set_code(line.strip())
+    def find_listener(self, type):
+        return next(l for l in self._listeners if isinstance(l, type))
 
 
 def test_for_dmenu():
@@ -191,12 +159,17 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     PortholeInstance.set_instance(Porthole(app))
 
+    listeners = []
     if test_for_dmenu():
-        kbdlistener = KbdListenerThread(PortholeInstance.instance)
-        _thread.start_new_thread(kbdlistener.run, ())
+        kbdListener = KbdListenerThread(PortholeInstance.instance)
+        _thread.start_new_thread(kbdListener.run, ())
+        listeners.append(kbdListener)
 
     stdinListener = StdinListenerThread(PortholeInstance.instance)
     _thread.start_new_thread(stdinListener.run, ())
+    listeners.append(stdinListener)
+
+    PortholeInstance.instance.set_listeners(listeners)
 
     if test_for_custom_proxy():
         spec = importlib.util.spec_from_file_location("", get_proxy_file_name())
