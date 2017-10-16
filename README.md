@@ -4,7 +4,7 @@
 
 
 
-![icon](Porthole/res/icon.png)
+![icon](src/res/icon.png)
 
 ## Installing 
 

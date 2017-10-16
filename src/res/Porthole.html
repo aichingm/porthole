@@ -39,7 +39,6 @@
             window.onload = function(){
                 var input = document.getElementById("input");
                 input.addEventListener("keydown", function(event){
-                    console.log(event)
                     if(event.keyCode == 13){
                         var url = input.value;     
                         window.location = url;
@@ -51,7 +50,7 @@
     <body>
         <div style="text-align: center;" class="main">
             <div style="background-image: url(&quot;icon.svg&quot;);background-repeat: no-repeat;width: 100%;background-position: center;background-size: auto 100%;" class="center hasInput">
-                <!--<input id="input" type="url" style="margin-top: 65vh;width: 200px;" value="https://"></input>-->
+                <input id="input" type="url" style="display: --;margin-top: 65vh;width: 200px;" value="https://"></input>
             </div>
         </div>
     

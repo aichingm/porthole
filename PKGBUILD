@@ -3,7 +3,7 @@ _pkgname=porthole
 pkgname="${_pkgname}-git"
 pkgver=20171001222649
 pkgrel=1
-pkgdesc="Porthole"
+pkgdesc="Porthole - A minimalistic frameless text-driven window to the world wide web!"
 arch=('any')
 url="https://github.com/aichingm/porthole"
 license=('GPL3')
@@ -23,7 +23,7 @@ package() {
   cd "$srcdir/${_pkgname}"
   python setup.py install --root="$pkgdir/" --optimize=1
   install -Dm755 "${srcdir}/${_pkgname}/porthole.desktop" "${pkgdir}/usr/share/applications/porthole.desktop"
-  install -Dm755 "${srcdir}/${_pkgname}/Porthole/res/icon.png" "${pkgdir}/usr/share/pixmaps/porthole.png"
+  install -Dm755 "${srcdir}/${_pkgname}/src/res/icon.png" "${pkgdir}/usr/share/pixmaps/porthole.png"
 }
 
 # vim:set ts=2 sw=2 et:
