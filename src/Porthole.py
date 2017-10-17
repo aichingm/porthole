@@ -12,6 +12,7 @@ import subprocess
 import _thread
 import signal
 import traceback
+import tempfile
 import time
 import argparse
 # path imports
@@ -58,7 +59,7 @@ class Porthole(QMainWindow):
         self.resize(440, 240)
 
         self.shortcut = QShortcut(QtGui.QKeySequence("Ctrl+Shift+Return"), self)
-        self.shortcut.activated.connect(self.on_seq_down)
+        self.shortcut.activated.connect(self._on_seq_down)
 
     def _setup_web_engine_view(self):
         self.web_engine_view = WebEngineView()
@@ -138,10 +139,13 @@ class Porthole(QMainWindow):
     def find_listener(self, type):
         return next(l for l in self._listeners if isinstance(l, type))
 
-    def on_seq_down(self):
+    def _on_seq_down(self):
         result = subprocess.run(['dmenu', '-p', "::"], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE)
         if result.returncode == 0:
             self.set_code(result.stdout.decode("utf-8").strip())
+
+    def set_key_sequence(self, str):
+        self.shortcut.setKey(str)
 
 
 def test_for_dmenu():
@@ -160,7 +164,7 @@ def get_proxy_file_name():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--init", help="code to initialize the porthole instance")
+    parser.add_argument("--init", action='append', help="code to initialize the porthole instance, can be passed multiple times")
     args = parser.parse_args()
 
     # register ctrl+c to SIGINT
@@ -182,5 +186,6 @@ if __name__ == "__main__":
         spec.loader.exec_module(proxyModule)
 
     if args.init:
-        PortholeInstance.instance.set_code(args.init)
+        for code in args.init:
+            PortholeInstance.instance.set_code(code)
     sys.exit(app.exec_())

@@ -1,2 +1,2 @@
 include porthole README.md
-recursive-include porthole/res *
+recursive-include src/res *

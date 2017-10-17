@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 # url imports
 from urllib.parse import urlparse
 # system and os imports
-import subprocess  
+import subprocess
 
 
 class PortholeInstance():
@@ -89,14 +89,20 @@ class PortholeProxy():
         else:
             self._porthole.remove_window_flag(QtCore.Qt.Tool)
         return self
-    
+
     def fs(self, fullscreen=None):
         if fullscreen == None:
             fullscreen = not self._porthole.isFullScreen()
-        
+
         print(fullscreen)
         if not fullscreen:
             self._porthole.showNormal()
         else:
             self._porthole.showFullScreen()
+        return self
+
+    def setaccess(self, key_seq=None):
+        if key_seq == None:
+            key_seq = "Ctrl+Shift+Return"
+        self._porthole.set_key_sequence(key_seq)
         return self

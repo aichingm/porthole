@@ -124,6 +124,10 @@ To interact with porthole hit `ctrl` + `shift` + `enter` which opens a menu in f
 
   **nop()**
 
+* settaccess sets the access key sequence to open dmenu
+
+  **setaccess("Ctrl+Shift+d")**
+
 ### Stacking Methods
 
 You can execute multiple commands like this:
@@ -140,13 +144,24 @@ Execute methods right after the start of porthole:
 porthole --init "go(\"youtube.com\").dim(880,480).pos(1000,100)"
 ```
 
+--init can be passed multipe times
+
+```shell
+porthole --init "setaccess(\"Ctrl+Shift+d\")" --init "go(\"youtube.com\").dim(880,480).pos(1000,100)"
+```
+
 This is useful for `bash` aliases (~/.bashrc):
 
 ```shell
 ....
+# This will set the access key for youtube and netflix too!
+alias porthole='porthole --init "setacces(\"Ctrl+Shift+d\")"'
+
 alias youtube='porthole --init "go(\"youtube.com\").dim(880,480).pos(1000,100)"'
+alias netflix='porthole --init "go(\"netflix.com\").dim(440,240).pos(1150,200)"'
 ....
 ```
+
 
 ### Messing With Porthole
 
