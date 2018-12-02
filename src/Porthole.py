@@ -9,6 +9,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineSettings
 import sys
 import os
 import subprocess
+import threading
 import _thread
 import signal
 import traceback
@@ -40,8 +41,6 @@ class Porthole(QMainWindow):
     def _setup_vars(self, app):
         self._code = ""
         self.isFs = False
-        #                          remove the frame         put it over all other windows   remove it from the taskbar
-        self.windowFlags = (QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.Tool)
         self._app = app
         self.proxy = PortholeProxy(self)
 
@@ -52,8 +51,7 @@ class Porthole(QMainWindow):
         self.setWindowTitle('Porthole')
         scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'res/icon.png'))
-        # QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.Tool
-        self.setWindowFlags(self.windowFlags)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.Tool|QtCore.Qt.WindowStaysOnTopHint)
         self.setAttribute(QtCore.Qt.WA_NoSystemBackground, True)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
         self.resize(440, 240)
@@ -95,23 +93,24 @@ class Porthole(QMainWindow):
         self._app.quit()
 
     def remove_window_flag(self, flag):
-        self.windowFlags = self.windowFlags & ~flag
-        self.setWindowFlags(self.windowFlags)
-        self.show()
+        self.setWindowFlag(flag, False)
+        #self.show()
 
-    def setWindowFlag(self, flag):
-        self.windowFlags = self.windowFlags | flag
-        self.setWindowFlags(self.windowFlags)
-        self.show()
+    def add_window_flag(self, flag):
+        self.setWindowFlag(flag, True)
+        #self.show()
 
     def has_border(self):
-        return (self.windowFlags & QtCore.Qt.FramelessWindowHint) == QtCore.Qt.FramelessWindowHint
+        return (self.windowFlags() & QtCore.Qt.FramelessWindowHint) == QtCore.Qt.FramelessWindowHint
 
     def is_on_top(self):
-        return (self.windowFlags & QtCore.Qt.WindowStaysOnTopHint) == QtCore.Qt.WindowStaysOnTopHint
+        return (self.windowFlags() & QtCore.Qt.WindowStaysOnTopHint) == QtCore.Qt.WindowStaysOnTopHint
+
+    def is_on_bottom(self):
+        return (self.windowFlags() & QtCore.Qt.WindowStaysOnBottomHint) == QtCore.Qt.WindowStaysOnBottomHint
 
     def is_taskbar(self):
-        return (self.windowFlags & QtCore.Qt.Tool) == QtCore.Qt.Tool
+        return (self.windowFlags() & QtCore.Qt.Tool) == QtCore.Qt.Tool
 
     def isFullScreen(self):
         return self.isFs
@@ -140,6 +139,10 @@ class Porthole(QMainWindow):
         return next(l for l in self._listeners if isinstance(l, type))
 
     def _on_seq_down(self):
+        t = threading.Thread(target=self._dmenu_tread)
+        t.start()
+
+    def _dmenu_tread(self):
         result = subprocess.run(['dmenu', '-p', "::"], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE)
         if result.returncode == 0:
             self.set_code(result.stdout.decode("utf-8").strip())
