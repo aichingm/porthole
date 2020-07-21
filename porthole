@@ -4,6 +4,6 @@ path=$(dirname "${BASH_SOURCE[0]}")
 if [ -d "${path}/.git" ]; then
     python3 "${path}/src/Porthole.py" "$@"
 else
-    python3 "${path}/../lib/python3.6/site-packages/Porthole/Porthole.py" "$@"
+    python3 "${path}/.."$(python -c "import site; print(site.getsitepackages()[0][4:])")"/Porthole/Porthole.py" "$@"
 fi
 

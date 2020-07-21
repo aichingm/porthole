@@ -79,6 +79,17 @@ To interact with porthole hit `ctrl` + `shift` + `enter` which opens a menu in f
   * border(False) removes the window border
 
     **border(False)**
+* onbottom() toggles the onbottomness of the window
+
+  **onbottom()**
+
+  * onbottom(True) puts the window below all other windows
+
+    **onbottom(True)**
+
+  * onbottom(False) sets the onbottomness of the window back to normal
+
+    **onbottom(False)**
 
 * ontop() toggles the ontopness of the window
 
@@ -88,7 +99,7 @@ To interact with porthole hit `ctrl` + `shift` + `enter` which opens a menu in f
 
     **ontop(True)**
 
-  * ontop(False) sets the ontopness of the window bask to normal
+  * ontop(False) sets the ontopness of the window back to normal
 
     **ontop(False)**
 
