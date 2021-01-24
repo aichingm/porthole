@@ -7,7 +7,7 @@ class StdinListenerThread(object):
         while True:
             try:
                 line = input().strip()
-                if line is not "":
+                if line != "":
                     self._porthole.set_code(line)
             except EOFError:
                 break
